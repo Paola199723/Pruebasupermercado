@@ -13,8 +13,8 @@ class ProductController extends Controller
     /**
      * Almacena un producto
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param  {Request}  $request
+     * @return $product
      */
     public function create(Request $request)
     {
@@ -36,8 +36,8 @@ class ProductController extends Controller
 /**
      * busca un producto por su nombre
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param  {Request} $request
+     * @return $date
      */
     public function read(Request $request){
 
@@ -62,8 +62,8 @@ class ProductController extends Controller
         /**
      * Borra a un producto de la lista utilizando el nombre.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param  {Request} $request
+     * @return {json}
      */
 
         public function delete(Request $request){
@@ -94,8 +94,8 @@ class ProductController extends Controller
      /**
      * edita un producto con el id ingresado.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param  {Request} $request
+     * @return {json}
      */
             public function update(Request $request){
 

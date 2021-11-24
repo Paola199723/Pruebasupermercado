@@ -21,7 +21,7 @@ use Illuminate\Support\Facades\Route;
    Route::group(['prefix' => 'user'], function () {
     Route::post('/',[AuthController::class ,'register']);
     Route::get('/', [AuthController::class ,'login']);
-    Route::post('/logout',[AuthController::class ,'logout']);
+
 
     });
 

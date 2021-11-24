@@ -13,11 +13,15 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AuthController extends Controller
 {
-
+    /**
+     * registra un ussuario
+     * @param{Request} $request
+     * @return{User}
+     */
     public function register(Request $request)
     {
         $validation = Validator::make($request->all(), [
-            'name' => 'required|unique:users,name',
+            'name' => 'required|string',
             'email' => 'required|string|unique:users,email',
             'password' => 'required|string|min:5',
         ]);
@@ -31,6 +35,11 @@ class AuthController extends Controller
         return response()->json($user);
 
     }
+    /**
+     * registra un login
+     * @param{Request} $request
+     * @return{JSON}
+     */
     public function login(Request $request){
 
         $validation = Validator::make($request->all(), [
