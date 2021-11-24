@@ -36,7 +36,7 @@ class AuthController extends Controller
 
     }
     /**
-     * registra un login
+     * obtiene los datos de un usuario para loguearse
      * @param{Request} $request
      * @return{JSON}
      */
