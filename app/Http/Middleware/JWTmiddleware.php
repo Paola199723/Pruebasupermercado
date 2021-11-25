@@ -17,13 +17,15 @@ class JWTmiddleware
      * @param  \Closure  $next
      * @return mixed
      */
-    public function handle(Request $request, Closure $next)
+    public function handle(Request $request)
     {
        // Request $request, Closure $next
 
         try {
-
-            $user = FacadesJWTAuth::parseToken()->authenticate();
+            if (!$user = FacadesJWTAuth::parseToken()->authenticate()) {
+                return response()->json(['user_not_found',$user], 404);
+             }
+          //  $user = FacadesJWTAuth::parseToken()->authenticate();
         } catch (JWTException $e) {
             if($e instanceof \Tymon\JWTAuth\Exceptions\TokenInvalidException){
                 return response()->json(['error' => 'invalid token'], 400);
@@ -33,6 +35,6 @@ class JWTmiddleware
             }
             return response()->json(['error' => 'Token not found'], 500);
         }
-        return $next($request);
+        return true;
     }
 }
