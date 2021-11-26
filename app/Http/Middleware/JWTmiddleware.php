@@ -17,7 +17,7 @@ class JWTmiddleware
      * @param  \Closure  $next
      * @return mixed
      */
-    public function handle(Request $request)
+    public function handle(Request $request,Closure $next)
     {
        // Request $request, Closure $next
 
@@ -35,6 +35,6 @@ class JWTmiddleware
             }
             return response()->json(['error' => 'Token not found'], 500);
         }
-        return true;
+        return $next($request);
     }
 }

@@ -6,6 +6,7 @@ use App\Http\Middleware\JWTmiddleware;
 use App\Models\Product;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use League\CommonMark\Node\Query\OrExpr;
@@ -18,7 +19,7 @@ class ProductController extends Controller
 {
 
     /**
-     * Almacena un producto
+     * Almacena un producto que compra el usuario
      *
      * @param  {Request}  $request
      * @return $product
@@ -36,11 +37,8 @@ class ProductController extends Controller
 
         if ($validation->fails()) return response()->json([ 'message'=> 'Form Invalid', 'errors' => $validation->errors() ], 400);
         $product = new Product($request->all());
-        if(!$this->ValidateToken($request)){
-            return response()-> json([ 'message'=> 'Invalid Token'], 400);
-        }
-
-        $product->idUser =auth()->user()->id;
+        $this->ValidateToken();
+        $product->idUser = JWTAuth::user()->id; //auth()->user()->id;
         $product->name_products = $request->input('name_products');
         $product->quantity = $request->input('quantity');
         $product->price = $request->input('price');
@@ -49,7 +47,7 @@ class ProductController extends Controller
         return response()->json($product);
     }
 /**
-     * busca un producto por su nombre
+     * busca un producto por su id para su venta
      *
      * @param  {Request} $request
      * @return $date
@@ -67,9 +65,7 @@ class ProductController extends Controller
             'errors' => $validation->errors() ], 400);
 
         }else{
-            if(!$this->ValidateToken($request)){
-                return response()-> json([ 'message'=> 'Invalid Token'], 400);
-            }
+            $this->ValidateToken();
             $date = DB::table('products')->where('id',$request->id)->get();
         }
 
@@ -93,10 +89,9 @@ class ProductController extends Controller
             return response()-> json([ 'message'=> 'Form Invalid',
             'errors' => $validation->errors() ], 400);
         }
-        if(!$this->ValidateToken($request)){
-            return response()-> json([ 'message'=> 'Invalid Token'], 400);
-        }
+        $this->ValidateToken();
         $product = new Product($request->all());
+
 
         if (DB::table('products')->where('id',$request ->id)->exists()) {
 
@@ -126,9 +121,7 @@ class ProductController extends Controller
              return response()-> json([ 'message'=> 'Form Invalid',
             'errors' => $validation->errors() ], 400);
         }
-        if(!$this->ValidateToken($request)){
-            return response()-> json([ 'message'=> 'Invalid Token'], 400);
-        }
+        $this->ValidateToken($request);
         $exist =  DB::table('products')->where('id',$request ->id)->exists();
         if ( $exist) {
             DB::table('products')
@@ -154,18 +147,21 @@ class ProductController extends Controller
      * @param  {Request} $request
      * @return {true}
      */
-    public function ValidateToken(Request $request){
-        $validation = Validator::make($request->all(), [
-            'token' => 'required',
-         ]);
-        if ($validation->fails()){
-            return response()-> json([ 'message'=> 'Form Invalid',
-            'errors' => $validation->errors() ], 400);
-        }
-        $auth = new JWTmiddleware();
-        $response = $auth->handle($request);
-        if($response){
-            return true;
+    public function ValidateToken(){
+
+         try {
+            if (!$user = JWTAuth::parseToken()->authenticate()) {
+                return response()->json(['user_not_found',$user], 404);
+             }
+          //  $user = FacadesJWTAuth::parseToken()->authenticate();
+        } catch (JWTException $e) {
+            if($e instanceof \Tymon\JWTAuth\Exceptions\TokenInvalidException){
+                return response()->json(['error' => 'invalid token'], 400);
+            }
+            if($e instanceof \Tymon\JWTAuth\Exceptions\TokenExpiredException){
+                return response()->json(['error' => 'Token is expired'], 500);
+            }
+            return response()->json(['error' => 'Token not found'], 500);
         }
 
     }
@@ -183,10 +179,8 @@ class ProductController extends Controller
             return response()-> json([ 'message'=> 'Form Invalid',
             'errors' => $validation->errors() ], 400);
         }
-        if(!$this->ValidateToken($request)){
-            return response()-> json([ 'message'=> 'Invalid Token'], 400);
-        }
-        $id =auth()->user()->id;
+        $this->ValidateToken();
+        $id =JWTAuth::user()->id;
        $maker =  DB::table('products')->where('idUser',$id)->get();
         return response()-> json($maker);
     }

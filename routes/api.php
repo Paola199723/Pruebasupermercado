@@ -24,7 +24,7 @@ use Illuminate\Support\Facades\Route;
 
 
     });
-
+   
     Route::group(['prefix' => 'supermaker'], function () {
         Route::get('/', [ProductController::class, 'read']);
         Route::post('/', [ProductController::class ,'create']);//
